@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React from "react";
 import {
   Dialog,
   DialogContent,
@@ -17,70 +17,25 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
-interface Person {
-  name: string;
-  birthDate: string;
-}
+import useAgeStore from "@/store/useAgeStore";
+import { calculateAge } from "@/utils/calculateAge";
 
 const AgeCalculator = () => {
-  const [birthDate, setBirthDate] = useState(
-    new Date().toISOString().split("T")[0]
-  );
-  const [currentDate, setCurrentDate] = useState(
-    new Date().toISOString().split("T")[0]
-  );
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [personName, setPersonName] = useState("");
-  const [savedPeople, setSavedPeople] = useState<Person[]>([]);
+  const {
+    birthDate,
+    currentDate,
+    savedPeople,
+    isModalOpen,
+    personName,
+    setBirthDate,
+    setCurrentDate,
+    setIsModalOpen,
+    setPersonName,
+    savePerson,
+    selectPerson,
+  } = useAgeStore();
 
-  // Load saved people from localStorage on component mount
-  useEffect(() => {
-    const saved = localStorage.getItem("savedPeople");
-    if (saved) {
-      setSavedPeople(JSON.parse(saved));
-    }
-  }, []);
-
-  const calculateAge = () => {
-    const birth = new Date(birthDate);
-    const current = new Date(currentDate);
-
-    const diffTime = Math.abs(current.getTime() - birth.getTime());
-    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-    const diffWeeks = Math.floor(diffDays / 7);
-    const remainingDays = diffDays % 7;
-
-    let years = current.getFullYear() - birth.getFullYear();
-    let months = current.getMonth() - birth.getMonth();
-
-    if (months < 0) {
-      years--;
-      months += 12;
-    }
-
-    const totalMonths = years * 12 + months;
-
-    return {
-      detailed: `${years} years ${months} months ${diffDays % 30} days`,
-      months: `${totalMonths} months ${diffDays % 30} days`,
-      weeks: `${diffWeeks} weeks ${remainingDays} days`,
-      days: `${diffDays} days`,
-    };
-  };
-
-  const handleSavePerson = () => {
-    if (personName.trim()) {
-      const newPerson = { name: personName, birthDate };
-      const updatedPeople = [...savedPeople, newPerson];
-      setSavedPeople(updatedPeople);
-      localStorage.setItem("savedPeople", JSON.stringify(updatedPeople));
-      setPersonName("");
-      setIsModalOpen(false);
-    }
-  };
-
-  const age = calculateAge();
+  const age = calculateAge(birthDate, currentDate);
 
   return (
     <div className="max-w-lg mx-auto p-6 space-y-6">
@@ -107,14 +62,7 @@ const AgeCalculator = () => {
 
         <div className="flex flex-col gap-2">
           <label className="font-medium">Saved People:</label>
-          <Select
-            onValueChange={(value) => {
-              const person = savedPeople.find((p) => p.name === value);
-              if (person) {
-                setBirthDate(person.birthDate);
-              }
-            }}
-          >
+          <Select onValueChange={selectPerson}>
             <SelectTrigger>
               <SelectValue placeholder="Select a person" />
             </SelectTrigger>
@@ -165,7 +113,7 @@ const AgeCalculator = () => {
             <Button variant="outline" onClick={() => setIsModalOpen(false)}>
               Cancel
             </Button>
-            <Button onClick={handleSavePerson}>Save</Button>
+            <Button onClick={savePerson}>Save</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
