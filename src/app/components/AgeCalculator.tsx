@@ -62,7 +62,10 @@ const AgeCalculator = () => {
 
         <div className="flex flex-col gap-2">
           <label className="font-medium">Saved People:</label>
-          <Select onValueChange={selectPerson}>
+          <Select
+            onValueChange={selectPerson}
+            disabled={savedPeople.length === 0}
+          >
             <SelectTrigger>
               <SelectValue placeholder="Select a person" />
             </SelectTrigger>
