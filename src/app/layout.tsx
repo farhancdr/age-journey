@@ -31,13 +31,13 @@ export default function RootLayout({
         sizes="96x96"
       />
       <link rel="icon" type="image/svg+xml" href="/icons/favicon.svg" />
-      <link rel="shortcut icon" href="/icons/favicon.ico" />
+      <link rel="shortcut icon" href="/favicon.ico" />
       <link
         rel="apple-touch-icon"
         sizes="180x180"
         href="/icons/apple-touch-icon.png"
       />
-      <link rel="manifest" href="/site.webmanifest" />
+      <link rel="manifest" href="/manifest.json" />
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >

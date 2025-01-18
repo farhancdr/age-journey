@@ -1,14 +1,17 @@
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const withPWA = require('next-pwa')({
-  dest: 'public',
-  register: true,
-  skipWaiting: true,
-  disable: process.env.NODE_ENV === 'development'
-})
+/* eslint-disable @typescript-eslint/no-require-imports */
+// next.config.js
 
 /** @type {import('next').NextConfig} */
-const nextConfig = {
-  // your existing config
-}
 
-module.exports = withPWA(nextConfig)
+const runtimeCaching = require("next-pwa/cache");
+const withPWA = require('next-pwa')({
+ dest: 'public', 
+ register: true,
+ skipWaiting: true,
+ runtimeCaching
+})
+
+module.exports = withPWA({
+ // other congigs
+ reactStrictMode: false
+})
