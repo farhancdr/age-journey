@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/select";
 import useAgeStore from "@/store/useAgeStore";
 import { calculateAge } from "@/utils/calculateAge";
+import { Card } from "@/components/ui/card";
 
 const AgeCalculator = () => {
   const {
@@ -27,6 +28,7 @@ const AgeCalculator = () => {
     savedPeople,
     isModalOpen,
     personName,
+    selectedPerson,
     setBirthDate,
     setCurrentDate,
     setIsModalOpen,
@@ -37,8 +39,14 @@ const AgeCalculator = () => {
 
   const age = calculateAge(birthDate, currentDate);
 
+  useEffect(() => {
+    const today = new Date();
+    setCurrentDate(today.toISOString().split("T")[0]);
+    selectPerson();
+  }, [selectPerson, setCurrentDate]);
+
   return (
-    <div className="max-w-lg mx-auto p-6 space-y-6">
+    <Card className="max-w-lg mx-auto p-6 space-y-6 mt-5">
       <h1 className="text-2xl font-bold mb-6">Age Calculator</h1>
 
       <div className="space-y-4">
@@ -63,6 +71,7 @@ const AgeCalculator = () => {
         <div className="flex flex-col gap-2">
           <label className="font-medium">Saved People:</label>
           <Select
+            value={selectedPerson?.name}
             onValueChange={selectPerson}
             disabled={savedPeople.length === 0}
           >
@@ -120,7 +129,7 @@ const AgeCalculator = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
+    </Card>
   );
 };
 

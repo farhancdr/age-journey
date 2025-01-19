@@ -1,5 +1,5 @@
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
 interface Person {
   name: string;
@@ -12,22 +12,24 @@ interface AgeState {
   savedPeople: Person[];
   isModalOpen: boolean;
   personName: string;
+  selectedPerson: Person | null;
   setBirthDate: (date: string) => void;
   setCurrentDate: (date: string) => void;
   setIsModalOpen: (isOpen: boolean) => void;
   setPersonName: (name: string) => void;
   savePerson: () => void;
-  selectPerson: (name: string) => void;
+  selectPerson: (name?: string) => void;
 }
 
 const useAgeStore = create<AgeState>()(
   persist(
     (set, get) => ({
-      birthDate: new Date().toISOString().split('T')[0],
-      currentDate: new Date().toISOString().split('T')[0],
+      birthDate: new Date().toISOString().split("T")[0],
+      currentDate: new Date().toISOString().split("T")[0],
       savedPeople: [],
       isModalOpen: false,
-      personName: '',
+      personName: "",
+      selectedPerson: null,
 
       setBirthDate: (date) => set({ birthDate: date }),
       setCurrentDate: (date) => set({ currentDate: date }),
@@ -40,22 +42,29 @@ const useAgeStore = create<AgeState>()(
           const newPerson = { name: personName, birthDate };
           set({
             savedPeople: [...savedPeople, newPerson],
-            personName: '',
+            personName: "",
             isModalOpen: false,
           });
         }
       },
 
       selectPerson: (name) => {
-        const { savedPeople } = get();
-        const person = savedPeople.find(p => p.name === name);
+        const { savedPeople, selectedPerson } = get();
+        if (!name && !selectedPerson && savedPeople.length > 0) {
+          set({
+            birthDate: savedPeople[0].birthDate,
+            selectedPerson: savedPeople[0],
+          });
+          return;
+        }
+        const person = savedPeople.find((p) => p.name === name);
         if (person) {
-          set({ birthDate: person.birthDate });
+          set({ birthDate: person.birthDate, selectedPerson: person });
         }
       },
     }),
     {
-      name: 'age-calculator-storage',
+      name: "age-calculator-storage",
     }
   )
 );
