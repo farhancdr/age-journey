@@ -4,22 +4,23 @@ import duration from "dayjs/plugin/duration";
 dayjs.extend(duration);
 
 export const calculateAge = (birthDate: string, currentDate: string) => {
-  const birth = dayjs(birthDate);
-  const current = dayjs(currentDate);
+  const birth = dayjs(birthDate, "DD-MM-YYYY");
+  const today = dayjs(currentDate, "DD-MM-YYYY");
 
-  const years = current.diff(birth, "year");
-  const months = current.diff(birth.add(years, "year"), "month");
-  const days = current.diff(birth.add(years, "year").add(months, "month"), "day");
+  const ageInDays = today.diff(birth, "day");
+  const ageDuration = dayjs.duration(today.diff(birth));
 
-  const totalMonths = years * 12 + months;
-  const totalDays = current.diff(birth, "day");
-  const totalWeeks = Math.floor(totalDays / 7);
-  const remainingDays = totalDays % 7;
+  const years = ageDuration.years();
+  const months = ageDuration.months();
+  const days = ageDuration.days() + 1;
+
+  const weeks = Math.floor(ageInDays / 7);
+  const remainingDays = ageInDays % 7;
 
   return {
     detailed: `${years} years ${months} months ${days} days`,
-    months: `${totalMonths} months ${days} days`,
-    weeks: `${totalWeeks} weeks ${remainingDays} days`,
-    days: `${totalDays} days`
+    months: `${years * 12 + months} months ${days} days`,
+    weeks: `${weeks} weeks ${remainingDays} days`,
+    days: `${ageInDays} days`,
   };
 };
